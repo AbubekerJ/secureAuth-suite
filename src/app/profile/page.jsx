@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 
-const page = () => {
+const Page = () => {
   const [user ,setUser] = useState(null)
   const  fetchUserData = async ()=>{
     try {
@@ -33,4 +33,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page
