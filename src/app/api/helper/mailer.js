@@ -40,23 +40,23 @@ export const sendMail =async (userId , email  , emailType)=>{
           }
        })
     }
-
+  
+    
     // Looking to send emails in production? Check out our Email API/SMTP product!
 const transport = nodemailer.createTransport({
-    host: "sandbox.smtp.mailtrap.io",
-    port: 2525,
+    host:process.env.HOST,
+    port:'465',
     auth: {
-      user: "62b8f6782cf154",
-      pass: "fe13b51de0da9a"
+      user:process.env.USER,
+      pass:process.env.PASS
     }
   });
 
 
   const info = await transport.sendMail({
-    from: '"Maddison Foo Koch 👻" <maddison53@ethereal.email>', // sender address
+    from: 'abubekerjemal03@gmail.com', // sender address
     to: email, // list of receivers
-    subject:emailType==='VERIFY'?'email verification email':'password reset', // Subject line
-    text: "Hello world?", // plain text body
+    subject:emailType==='VERIFY'?'email verification email':'password reset', 
     html: emailType==='VERIFY'?`<h1>Click here to verify your email <a href="http://localhost:3000/verify?token=${token}">Verify</a></h1>`:`<h1>Click here to verify your email <a href="http://localhost:3000/resetPassword?token=${token}">ResetPassword </a></h1>` ,
   });
 

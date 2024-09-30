@@ -14,10 +14,21 @@ export const POST=async (req)=>{
            email:user.email 
         }
      })
+     const userNameExist = await prisma.user.findUnique({
+        where:{
+           username:user.username 
+        }
+     })
      if(userExist){
         return  NextResponse.json({
             success:false,
             message:'user already registerd'
+        })
+     }
+     if(userNameExist){
+        return  NextResponse.json({
+            success:false,
+            message:'username taken'
         })
      }
    try {
