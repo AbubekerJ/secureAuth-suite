@@ -3,7 +3,7 @@ import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-const Page = () => {
+const Verify = () => {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   const router = useRouter();
@@ -52,4 +52,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default Verify;

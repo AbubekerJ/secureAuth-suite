@@ -5,7 +5,7 @@ import {resetPasswordAction} from '../actions/resetPasswordAction'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'react-toastify'
 
-const Page = () => {
+const ResetPassword = () => {
     const [form , setForm ]=useState({})
     const router = useRouter()
     const searchParams = useSearchParams();
@@ -67,4 +67,4 @@ const Page = () => {
   )
 }
 
-export default Page
+export default ResetPassword

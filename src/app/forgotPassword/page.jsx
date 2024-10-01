@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { verifyEmailToResetPass } from '../actions/verifyEmailToResetPass';
 import { toast } from 'react-toastify';
 
-const Page = () => {
+const ForgotPassword = () => {
   const [email, setEmail] = useState('');
 
   const [loading , setLoading] = useState(false)
@@ -59,4 +59,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default ForgotPassword;

@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
-const Page = () => {
+const Signin= () => {
   const [form, setform] = useState({});
   const router = useRouter();
   const [loaing, setLoading] = useState(false);
@@ -92,4 +92,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default Signin;
