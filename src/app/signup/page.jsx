@@ -5,29 +5,44 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+
+
+
+const schema = z.object({
+  username:z.string().min(3 , {message:'Username must be atleast 3 character '}).max(15 , {message:'Username should not be this long'}),
+  email: z.string().email({ message: 'Invalid email!' }),
+  password: z.string().min(8, { message: 'Password must be at least 8 characters' }),
+});
 
 const Signup = () => {
-  const [form, setform] = useState({});
+
+  const {
+    register,
+   handleSubmit,
+   formState: { errors },
+ } = useForm({
+   resolver: zodResolver(schema),
+ });
+
   const router = useRouter()
-  const [loaing , setLoading]=useState(false)
-  const handleChange = (e) => {
-    setform({
-      ...form,
-      [e.target.id]: e.target.value,
-    });
+  const [loading , setLoading]=useState(false)
 
-  };
 
-  const handleSubmit = async (e)=>{
+
+
+  const onSubmitHandler = async (formData)=>{
      setLoading(true)
-     e.preventDefault()
+    
      try {
       const res  = await fetch('http://localhost:3000/api/signup',{
         method:'POST',
         headers:{
           'Content-Type':'application/json'
         },
-        body:JSON.stringify(form)
+        body:JSON.stringify(formData)
       })
       const data  =await res.json()
       console.log(data)
@@ -60,34 +75,37 @@ const Signup = () => {
           {" "}
           Keep you data safe
         </span>
-        <form className="flex flex-col  gap-3 " onSubmit={handleSubmit}>
+        <form className="flex flex-col  gap-3 " onSubmit={handleSubmit(onSubmitHandler)}>
           <input
-            required
-            type="username"
+            {...register('username')}
+            type="text"
             placeholder="username"
             className="shadow appearance-none border border-gray-400   rounded-3xl w-full py-2 px-3 md:px-6 md:py-4 bg-gray-200 text-black leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
             id="username"
-            onChange={handleChange}
+           
           />
+
+          {errors?.username && <p className='text-red-500 text-xs'>{errors?.username.message}</p>}
           <input
-            required
+            {...register('email')}
             type="email"
             placeholder="Email"
             className="shadow appearance-none border border-gray-400   rounded-3xl w-full py-2 px-3 md:px-6 md:py-4 bg-gray-200 text-black leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
             id="email"
-            onChange={handleChange}
+            
           />
+          {errors?.email && <p className='text-red-500 text-xs'>{errors?.email.message}</p>}
           <input
-            required
+            {...register('password')}
             type="password"
             placeholder="password"
             className="shadow appearance-none border border-gray-400   rounded-3xl w-full py-2 px-3 md:px-6 md:py-4 bg-gray-200 text-black leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
             id="password"
-            onChange={handleChange}
+          
           />
-
+          {errors?.password && <p className='text-red-500 text-xs'>{errors?.password.message}</p>}
           <button className="uppercase  bg-gradient-to-tr from-green-600 to bg-green-400 py-2 px-3 md:px-6 md:py-4 text-black font-bold rounded-3xl">
-           {loaing?<span>Loading</span>:<span>SignUp</span>} 
+           {loading?<span>Loading</span>:<span>SignUp</span>} 
           </button>
         </form>
       </div>

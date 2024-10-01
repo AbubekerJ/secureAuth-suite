@@ -5,45 +5,71 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { useMutation } from "@tanstack/react-query";
+
+const schema = z.object({
+
+  email: z.string().email({ message: 'Invalid email!' }),
+  password: z.string().min(8, { message: 'Password must be at least 8 characters' }),
+});
 
 const Signin= () => {
-  const [form, setform] = useState({});
   const router = useRouter();
-  const [loaing, setLoading] = useState(false);
-  const handleChange = (e) => {
-    setform({
-      ...form,
-      [e.target.id]: e.target.value,
-    });
-  };
+  const [loading, setLoading] = useState(false);
+  const {
 
-  const handleSubmit = async (e) => {
-    setLoading(true);
-    e.preventDefault();
-    try {
+     register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+  });
+
+
+  const mutation = useMutation({
+    mutationFn: async(formData)=>{
       const res = await fetch("http://localhost:3000/api/signin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify(formData),
       });
-      const data = await res.json();
-      console.log(data);
-      if (data.success === false) {
-        toast.error(data.message);
+      if (!res.ok) {
+        const errorData = await res.json();
+        toast.error(errorData.message ) || "Sign in failed";
+    }
+    
+    return await res.json();
+    },
+    onSuccess:(data)=>{
+      if(data.success){
+        console.log('Login successful!');
+        router.push('/')
         setLoading(false);
-        return;
       }
-
-      toast.success("loged in");
-      setLoading(false);
-      router.push("/");
-    } catch (error) {
+      toast.error(data.message);
+    },
+    onError:(error)=>{
       toast.error(error);
       setLoading(false);
+    
     }
+  })
+
+ const onSubmitHandler = async (formData) => {
+    setLoading(true);
+   
+   mutation.mutate(formData)
   };
+  
+ 
+
+
+ 
 
   return (
     <div className="flex flex-col gap-10 justify-center items-center h-screen ">
@@ -57,26 +83,31 @@ const Signin= () => {
           {" "}
           Keep you data safe
         </span>
-        <form className="flex flex-col  gap-3 " onSubmit={handleSubmit}>
+        <form className="flex flex-col  gap-3 " onSubmit={handleSubmit(onSubmitHandler)}>
           <input
-            required
+          {...register('email')}
+            
             type="email"
             placeholder="Email"
             className="shadow appearance-none border border-gray-400   rounded-3xl w-full py-2 px-3 md:px-6 md:py-4 bg-gray-200 text-black leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
             id="email"
-            onChange={handleChange}
+         
           />
+          {errors?.email && <p className='text-red-500 text-xs'>{errors?.email.message}</p>}
           <input
-            required
+          {...register('password')}
+           
             type="password"
             placeholder="password"
             className="shadow appearance-none border border-gray-400   rounded-3xl w-full py-2 px-3 md:px-6 md:py-4 bg-gray-200 text-black leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
             id="password"
-            onChange={handleChange}
+           
+          
           />
+            {errors?.password && <p className='text-red-500 text-xs'>{errors?.password.message}</p>}
 
           <button className="uppercase  bg-gradient-to-tr from-green-600 to bg-green-400 py-2 px-3 md:px-6 md:py-4 text-black font-bold rounded-3xl">
-            {loaing ? <span>Loading</span> : <span>SignIn</span>}
+            {loading ? <span>Loading</span> : <span>SignIn</span>}
           </button>
           <Link href={'/forgotPassword'} className="text-sm text text-green-500 text-start">forgote password</Link>
         </form>
